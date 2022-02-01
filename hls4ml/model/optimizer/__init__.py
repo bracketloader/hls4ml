@@ -23,6 +23,7 @@ from hls4ml.model.optimizer.passes.merge_const import MergeTwoConstant, MergeToB
 from hls4ml.model.optimizer.passes.matmul_const_to_dense import MatmulConstToDense
 from hls4ml.model.optimizer.passes.conv_to_convxd import ConvToConvXD
 from hls4ml.model.optimizer.passes.reshape_nop import ReshapeToNop
+from hls4ml.model.optimizer.passes.move_scales import ApplyAlphaDownMatMul, ApplyAlphaDownConv, ApplyAlphaBiasDownConv, ApplyAlphaWeightDownConv
 
 try:
     from hls4ml.model.optimizer.passes.qkeras import OutputRoundingSaturationMode
@@ -46,11 +47,15 @@ register_pass('fuse_quant_with_constant', FuseQuantWithConstant)
 register_pass('quant_to_alph_activation_alpha', QuantToAlphaActivationAlpha)
 register_pass('const_quant_to_const_alpha', ConstQuantToConstAlpha)
 register_pass('batch_norm_constant_parameters', BatchNormConstantParameters)
-register_pass('fuse_consecutive_base_batch_normalizations', FuseConsecutiveBatchNormalization)
 register_pass('constant_batch_norm_fusion', ConstantBatchNormMerging)
 register_pass('merge_two_constants', MergeTwoConstant)
 register_pass('merge_to_batchnorm', MergeToBatchNormalization)
 register_pass('merge_to_batchnorm_div', MergeToBatchNormalizationDiv)
+register_pass('fuse_consecutive_base_batch_normalizations', FuseConsecutiveBatchNormalization)
+register_pass('scale_down_matmul', ApplyAlphaDownMatMul)
+register_pass('scale_down_weight_conv', ApplyAlphaWeightDownConv)
+register_pass('scale_down_bias_conv', ApplyAlphaBiasDownConv)
+register_pass('scale_down_conv', ApplyAlphaDownConv)
 register_pass('matmul_const_to_dense', MatmulConstToDense)
 register_pass('conv_to_convxd', ConvToConvXD)
 register_pass('eliminate_linear_activation', EliminateLinearActivation)
