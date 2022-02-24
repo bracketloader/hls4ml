@@ -18,7 +18,8 @@ from hls4ml.model.optimizer.passes.multi_dense import ReplaceMultidimensionalDen
 from hls4ml.model.optimizer.passes.reshape_const import ReshapeConstant
 from hls4ml.model.optimizer.passes.quant_opt import (
     QuantConstantParameters, QuantToActivation, FuseQuantWithConstant, QuantToAlphaActivationAlpha, ConstQuantToConstAlpha)
-from hls4ml.model.optimizer.passes.batchnorm_opt import BatchNormConstantParameters, ConstantBatchNormMerging, FuseConsecutiveBatchNormalization
+from hls4ml.model.optimizer.passes.batchnorm_opt import (BatchNormConstantParameters, ConstantBatchNormMerging,
+    FuseConsecutiveBatchNormalization, BroadcastWeightsBatchNormalization)
 from hls4ml.model.optimizer.passes.merge_const import MergeTwoConstant, MergeToBatchNormalization, MergeToBatchNormalizationDiv
 from hls4ml.model.optimizer.passes.matmul_const_to_dense import MatmulConstToDense
 from hls4ml.model.optimizer.passes.conv_to_convxd import ConvToConvXD
@@ -73,4 +74,5 @@ register_pass('reshape_stream', ReshapeStream)
 register_pass('remove_useless_transpose', RemoveUselessTranspose)
 register_pass('replace_multidense_conv', ReplaceMultidimensionalDenseWithConv)
 register_pass('broadcast_stream', BroadcastStream)
+register_pass('broadcast_batchnorm', BroadcastWeightsBatchNormalization)
 register_pass('eliminate_linear_activation_quant', EliminateLinearActivationQuant)

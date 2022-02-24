@@ -76,8 +76,8 @@ class QuantToActivation(OptimizerPass):
         # Only match if the scale is 1s and the zero-point is 0s
         if is_match: # to make sure this is a quant node with inputs
             input_shape = node.get_input_variable().shape
-            scale = np.broadcast_to(node.get_attr("scale"), input_shape)
-            bias = np.broadcast_to(node.get_attr("zeropt"), input_shape)
+            scale = node.get_attr("scale")
+            bias = node.get_attr("zeropt")
             is_match = is_match and (scale == np.ones_like(scale)).all()
             is_match = is_match and (bias == np.zeros_like(bias)).all()
         return is_match
@@ -128,8 +128,8 @@ class FuseQuantWithConstant(OptimizerPass):
         # Only match if the scale is 1s and the zero-point is 0s
         if is_match: # to make sure this is a quant node with inputs
             input_shape = node.get_input_variable().shape
-            scale = np.broadcast_to(node.get_attr("scale"), input_shape)
-            bias = np.broadcast_to(node.get_attr("zeropt"), input_shape)
+            scale = node.get_attr("scale")
+            bias = node.get_attr("zeropt")
             is_match = is_match and (scale == np.ones_like(scale)).all()
             is_match = is_match and (bias == np.zeros_like(bias)).all()
         return is_match
@@ -176,8 +176,8 @@ class QuantToAlphaActivationAlpha(OptimizerPass):
 
         if is_match: # to make sure this is a quant node with inputs
             input_shape = node.get_input_variable().shape
-            scale = np.broadcast_to(node.get_attr("scale"), input_shape)
-            bias = np.broadcast_to(node.get_attr("zeropt"), input_shape)
+            scale = node.get_attr("scale")
+            bias = node.get_attr("zeropt")
             is_match = is_match and ((scale != np.ones_like(scale)).any() or (bias != np.zeros_like(bias)).any())
         return is_match
 
@@ -231,8 +231,8 @@ class QuantToAlphaActivationAlpha(OptimizerPass):
         firstbias = bias
         scale_node.set_attr("scale", firstscale)
         scale_node.set_attr("bias", firstbias)
-        scale_node.add_weights(np.broadcast_to(firstscale, input_shape))
-        scale_node.add_bias(np.broadcast_to(firstbias, input_shape))
+        scale_node.add_weights(firstscale)
+        scale_node.add_bias(firstbias)
         model.insert_node(scale_node)
 
         rescale_node = model.make_node('ApplyAlpha', node.name + '_rescale', attributes_rescale, [x for x in new_node.outputs])
@@ -240,8 +240,8 @@ class QuantToAlphaActivationAlpha(OptimizerPass):
         rebias = -bias*scale
         rescale_node.set_attr("scale", rescale)
         rescale_node.set_attr("bias", rebias)
-        rescale_node.add_weights(np.broadcast_to(rescale, input_shape))
-        rescale_node.add_bias(np.broadcast_to(rebias, input_shape))
+        rescale_node.add_weights(rescale)
+        rescale_node.add_bias(rebias)
         model.insert_node(rescale_node)
 
         return True
@@ -264,8 +264,8 @@ class ConstQuantToConstAlpha(OptimizerPass):
 
         if is_match: # to make sure this is a quant node with inputs
             input_shape = node.get_input_variable().shape
-            scale = np.broadcast_to(node.get_attr("scale"), input_shape)
-            bias = np.broadcast_to(node.get_attr("zeropt"), input_shape)
+            scale = node.get_attr("scale")
+            bias = node.get_attr("zeropt")
             is_match = is_match and ((scale != np.ones_like(scale)).any() or (bias != np.zeros_like(bias)).any())
         return is_match
 
@@ -313,8 +313,8 @@ class ConstQuantToConstAlpha(OptimizerPass):
         rebias = -bias*scale
         rescale_node.set_attr("scale", rescale)
         rescale_node.set_attr("bias", rebias)
-        rescale_node.add_weights(np.broadcast_to(rescale, input_shape))
-        rescale_node.add_bias(np.broadcast_to(rebias, input_shape))
+        rescale_node.add_weights(rescale)
+        rescale_node.add_bias(rebias)
         model.replace_node(node, rescale_node)
 
         return True

@@ -64,8 +64,9 @@ class ApplyAlphaDownMatMul(OptimizerPass):
             # zero bias, propagate through, if possible
             # (always possible if scale is scalar)
             try:
-                newscale = np.broadcast_to(scale, output.shape)
-                newbias = np.zeros(output.shape)
+                np.broadcast_to(scale, output.shape)  # check size compatibility
+                newscale = scale
+                newbias = np.array(0)
                 can_propagate = True
             except ValueError:
                 can_propagate = False
@@ -74,8 +75,10 @@ class ApplyAlphaDownMatMul(OptimizerPass):
         if not can_propagate and isinstance(inp[other_idx], Constant):
             # can handle nonzero bias in some cases if other value is a Constant
             try:
-                newscale = np.broadcast_to(scale, output.shape)
-                newbias = np.broadcast_to(inp[other_idx].value * bias, output.shape)
+                np.broadcast_to(scale, output.shape)  # check size compatibility
+                newscale = scale
+                newbias = inp[other_idx].value * bias
+                np.broadcast_to(newbias, output.shape)
                 can_propagate = True
             except ValueError:
                 can_propagate = False
@@ -126,8 +129,9 @@ class ApplyAlphaDownConv(OptimizerPass):
             # zero bias, propagate through, if possible
             # (always possible if scale is scalar)
             try:
-                newscale = np.broadcast_to(scale, output.shape)
-                newbias = np.zeros(output.shape)
+                np.broadcast_to(scale, output.shape)  # check broadcastable
+                newscale = scale
+                newbias = np.array(0)
                 can_propagate = True
             except ValueError:
                 can_propagate = False
@@ -178,8 +182,9 @@ class ApplyAlphaWeightDownConv(OptimizerPass):
             # zero bias, propagate through, if possible
             # (always possible if scale is scalar)
             try:
-                newscale = np.broadcast_to(scale, output.shape)
-                newbias = np.zeros(output.shape)
+                np.broadcast_to(scale, output.shape)  # make sure broadcastable
+                newscale = scale
+                newbias = np.array(0)
                 can_propagate = True
             except ValueError:
                 can_propagate = False
@@ -229,8 +234,9 @@ class ApplyAlphaBiasDownConv(OptimizerPass):
         if not scale.shape and scale == 1:
             # No scale, just additional bias
             try:
-                newscale = np.ones(output.shape)
-                newbias = np.broadcast_to(bias, output.shape)
+                np.broadcast_to(bias, output.shape)
+                newscale = np.array(1)
+                newbias = bias
                 can_propagate = True
             except ValueError:
                 can_propagate = False

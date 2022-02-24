@@ -87,19 +87,19 @@ class MergeToBatchNormalization(OptimizerPass):
 
         op = node.attributes["op"]
         if op in ('add', 'sum'):
-            scale = np.ones(input_shape)
-            bias = np.broadcast_to(const_node.value, input_shape)
+            scale = np.array(1)
+            bias = const_node.value
         elif op == 'sub':
             if node1const:
-                scale = np.ones(input_shape)
-                bias = np.broadcast_to(-const_node.value, input_shape)
+                scale = np.array(1)
+                bias = -const_node.value
             else:
-                scale = -np.ones(input_shape)
-                bias = np.broadcast_to(const_node.value, input_shape)
+                scale = np.array(-1)
+                bias = const_node.value
 
         elif op == 'mul':
-            scale = np.broadcast_to(const_node.value, input_shape)
-            bias = np.zeros(input_shape)
+            scale = const_node.value
+            bias = np.array(0)
 
         attributes = node.attributes
         attributes.update({
@@ -134,7 +134,7 @@ class MergeToBatchNormalizationDiv(OptimizerPass):
         n_in = np.prod(input_shape)
         const_node = node.get_input_node(node.inputs[1])
         scale = 1/const_node.value
-        bias = np.zeros(input_shape)
+        bias = np.array(0)
 
         attributes = {
             "simple": True,
