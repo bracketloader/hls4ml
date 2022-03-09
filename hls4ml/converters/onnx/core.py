@@ -60,6 +60,7 @@ def parse_activation_layer(reader, node, inputs_map, input_shapes, graph, config
 
         if layer['class_name'] == 'Softmax':
             layer['activation'] = 'softmax'
+            layer['axis'] = get_onnx_attribute(node, 'axis', -1)
 
         elif layer['class_name'] in ['ELU', 'LeakyReLU', 'ThresholdedReLU']:
             layer['activation'] = layer['class_name']
