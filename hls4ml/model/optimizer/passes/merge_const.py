@@ -113,7 +113,7 @@ class MergeToBatchNormalization(OptimizerPass):
 
         bn_layer = model.make_node("BatchNormalization", f"bn_{node.name}",
                                    attributes,
-                                   [node.inputs[input_node_idx]], node.outputs)
+                                   [node.inputs[input_node_idx]], [x for x in node.outputs])
 
         model.remove_node(const_node, rewire=False)
         model.replace_node(node, bn_layer)
@@ -149,7 +149,7 @@ class MergeToBatchNormalizationDiv(OptimizerPass):
 
         bn_layer = model.make_node("BatchNormalization", f"bn_{node.name}",
                                    attributes,
-                                   [node.inputs[0]], node.outputs)
+                                   [node.inputs[0]], [x for x in node.outputs])
 
         model.remove_node(const_node, rewire=False)
         model.replace_node(node, bn_layer)

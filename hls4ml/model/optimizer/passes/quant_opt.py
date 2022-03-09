@@ -106,7 +106,7 @@ class QuantToActivation(OptimizerPass):
         })
 
         new_node = model.make_node('Activation', f'{node.name}_act',
-                                   attributes, [node.inputs[0]], node.outputs)
+                                   attributes, [node.inputs[0]], [x for x in node.outputs])
         new_node.get_output_variable().type.precision = precision
         model.replace_node(node, new_node)
 
@@ -208,7 +208,7 @@ class QuantToAlphaActivationAlpha(OptimizerPass):
         })
 
         new_node = model.make_node('Activation', f'{node.name}_act',
-                                   attributes, [node.inputs[0]], node.outputs)
+                                   attributes, [node.inputs[0]], [x for x in node.outputs])
         new_node.get_output_variable().type.precision = precision
         model.replace_node(node, new_node)
 
@@ -308,7 +308,8 @@ class ConstQuantToConstAlpha(OptimizerPass):
             'n_filt': -1
         })
 
-        rescale_node = model.make_node('ApplyAlpha', node.name + '_rescale', attributes_rescale, [x for x in node.inputs])
+        rescale_node = model.make_node('ApplyAlpha', node.name + '_rescale', attributes_rescale,
+             [x for x in node.inputs], [x for x in node.outputs])
         rescale = scale
         rebias = -bias*scale
         rescale_node.set_attr("scale", rescale)

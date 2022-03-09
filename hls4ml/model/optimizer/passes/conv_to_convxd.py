@@ -70,7 +70,8 @@ class ConvToConvXD(OptimizerPass):
             attributes["bias_quantizer"] =  bias_node.get_attr("quantizer")
 
         #making new node
-        new_node = model.make_node(nodetype, f"{nodetype}_{node.name}", attributes, [node.inputs[0]], node.outputs)
+        new_node = model.make_node(nodetype, f"{nodetype}_{node.name}", attributes,
+            [node.inputs[0]], [x for x in node.outputs])
 
         #removing and replacing old nodes
         model.remove_node(weight_node, rewire=False)

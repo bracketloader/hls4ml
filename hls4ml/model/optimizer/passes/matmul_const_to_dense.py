@@ -31,7 +31,7 @@ class MatmulConstToDense(OptimizerPass):
         other_precision = other_node.get_attr("quant_precision")
 
         if weight_precision and other_precision:
-            if (weight_precision.width != weight_precision.integer 
+            if (weight_precision.width != weight_precision.integer
                 or other_precision.width != other_precision.integer):
                 raise ValueError("quant_precisions must always have the same width and integer parameters")
 
@@ -56,7 +56,8 @@ class MatmulConstToDense(OptimizerPass):
         })
 
         #making new node
-        new_dense = model.make_node("Dense", f"Dense_{matmul_node.name}", attributes, [matmul_node.inputs[other_inp_idx]], matmul_node.outputs)
+        new_dense = model.make_node("Dense", f"Dense_{matmul_node.name}", attributes,
+            [matmul_node.inputs[other_inp_idx]], [x for x in matmul_node.outputs])
 
         #removing and replacing old nodes
         model.remove_node(const_node, rewire=False)
