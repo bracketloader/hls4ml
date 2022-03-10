@@ -27,6 +27,7 @@ def parse_merge_layer(reader, node, inputs_map, input_shapes, graph, config):
     elif layer['class_name'] ==  'Add':
         #Check if the layer is an AddBias
         for input in node.input:
+            # I think we don't use BiasAdd in ONNX currently
             if "bias" in input:
                 layer['class_name'] = 'BiasAdd'
                 # # Should the line below really be replaced with the one below it?

@@ -82,7 +82,7 @@ class ApplyAlphaDownMatMul(OptimizerPass):
                 can_propagate = True
             except ValueError:
                 can_propagate = False
-    
+
         if not can_propagate:
             return False
 
@@ -93,6 +93,44 @@ class ApplyAlphaDownMatMul(OptimizerPass):
         new_node.add_bias(newbias)
         model.insert_node(new_node)
         return True
+
+class ApplyAlphaDownAdd(OptimizerPass):
+    '''Shift an identical ApplyAlpha below a Merge (Add)'''
+
+    def match(self, node):
+        '''Check to see if we have an add with two ApplyAlphas with identical scale'''
+        is_match = (isinstance(node, Merge) and len(node.inputs) == 2
+                    and node.attributes["op"] == "add")
+        if is_match:
+            in0 = node.get_input_node(node.inputs[0])
+            in1 = node.get_input_node(node.inputs[1])
+            is_match = (isinstance(in0, ApplyAlpha) and isinstance(in1, ApplyAlpha)
+                    and (in0.weights['scale'].data_unquantized == in1.weights['scale'].data_unquantized).all())
+        return is_match
+
+    def transform(self, model, node):
+
+        in0 = node.get_input_node(node.inputs[0])
+        in1 = node.get_input_node(node.inputs[1])
+
+        # Check if we can move
+        scale = in0.weights['scale'].data_unquantized
+        bias0 = in0.weights['bias'].data_unquantized
+        bias1 = in1.weights['bias'].data_unquantized
+        try:
+            bias = bias0 + bias1
+        except ValueError:
+            return False
+
+        model.remove_node(in0)
+        model.remove_node(in1)
+
+        new_node = model.make_node('ApplyAlpha', in0.name, in0.attributes, [x for x in node.outputs])
+        new_node.add_weights(scale)
+        new_node.add_bias(bias)
+        model.insert_node(new_node)
+        return True
+
 
 class ApplyAlphaDownConv(OptimizerPass):
     '''Shift an ApplyAlpha on input below a Conv'''
@@ -135,7 +173,7 @@ class ApplyAlphaDownConv(OptimizerPass):
                 can_propagate = True
             except ValueError:
                 can_propagate = False
-   
+
         if not can_propagate:
             return False
 
@@ -188,7 +226,7 @@ class ApplyAlphaWeightDownConv(OptimizerPass):
                 can_propagate = True
             except ValueError:
                 can_propagate = False
-   
+
         if not can_propagate:
             return False
 
@@ -240,7 +278,7 @@ class ApplyAlphaBiasDownConv(OptimizerPass):
                 can_propagate = True
             except ValueError:
                 can_propagate = False
-   
+
         if not can_propagate:
             return False
 
