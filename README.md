@@ -9,7 +9,7 @@
 [![Downloads](https://static.pepy.tech/personalized-badge/hls4ml?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads)](https://pepy.tech/project/hls4ml)
 <a href="https://anaconda.org/conda-forge/hls4ml/"><img alt="conda-forge" src="https://img.shields.io/conda/dn/conda-forge/hls4ml.svg?label=conda-forge"></a>
 
-A package for machine learning inference in FPGAs. We create firmware implementations of machine learning algorithms using high level synthesis language (HLS). We translate traditional open-source machine learning package models into HLS that can be configured for your use-case!
+A package for machine learning inference in FPGAs. We create firmware implementations of machine learning algorithms using high-level synthesis language (HLS). We translate traditional open-source machine learning package models into HLS that can be configured for your use case!
 
 If you have any questions, comments, or ideas regarding hls4ml or just want to show us how you use hls4ml, don't hesitate to reach us through the [discussions](https://github.com/fastmachinelearning/hls4ml/discussions) tab.
 
@@ -45,7 +45,7 @@ print(config)
 # Convert it to a hls project
 hls_model = hls4ml.converters.keras_to_hls(config)
 
-# Print full list of example models if you want to explore more
+# Print a full list of example models if you want to explore more
 hls4ml.utils.fetch_example_list()
 ```
 
